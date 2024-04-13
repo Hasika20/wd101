@@ -47,20 +47,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateUserDataTable() {
-    userDataTableBody.innerHTML = '';
-    const userList = JSON.parse(localStorage.getItem('userList')) || [];
+  userDataTableBody.innerHTML = '';
+  const userList = JSON.parse(localStorage.getItem('userList')) || [];
 
-    userList.forEach((userData) => {
-      const userDataRow = createUserDataTableRow(userData);
-      userDataTableBody.appendChild(userDataRow);
-    });
+  userList.forEach((userData) => {
+    const userDataRow = createUserDataTableRow(userData);
+    userDataTableBody.appendChild(userDataRow);
+  });
 
-    if (userList.length > 0) {
-      userDataTableBody.parentNode.classList.remove('hidden');
-    } else {
-      userDataTableBody.parentNode.classList.add('hidden');
-    }
+  const userDataTable = document.getElementById('user-data');
+  if (userList.length > 0) {
+    userDataTable.classList.remove('hidden');
+  } else {
+    userDataTable.classList.add('hidden');
   }
+}
 
   function createUserDataTableRow(userData) {
     const row = document.createElement('tr');
