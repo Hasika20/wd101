@@ -1,3 +1,8 @@
+function getValueAndCheckExistence(id) {
+  const element = document.getElementById(id);
+  return element ? element.value : null;
+}
+
 const form = document.getElementById('registration-form');
 const dataTable = document.getElementById('user-data');
 const tableBody = dataTable.querySelector('tbody');
@@ -14,10 +19,10 @@ function handleSubmit(event) {
   event.preventDefault();
 
   const data = {
-    name: document.getElementById('name').value,
-    email: document.getElementById('email').value,
-    password: document.getElementById('password').value,
-    dob: document.getElementById('dob').value,
+    name: getValueAndCheckExistence('name'),
+    email: getValueAndCheckExistence('email'),
+    password: getValueAndCheckExistence('password'),
+    dob: getValueAndCheckExistence('dob'),
     terms: document.getElementById('terms').checked
   };
 
@@ -34,6 +39,7 @@ function validateData(data) {
   const minAge = 18;
   const maxAge = 55;
 
+  if (!data.dob) return false; // Handle missing date of birth
   const today = new Date();
   const birthDate = new Date(data.dob);
   const age = today.getFullYear() - birthDate.getFullYear();
