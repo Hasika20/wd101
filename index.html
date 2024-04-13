@@ -4,52 +4,106 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registration Form</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .checkbox-label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    .checkbox-text {
+      margin-left: 10px;
+    }
+
+    .submit-button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .submit-button:hover {
+      background-color: #0056b3;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>Registration Form</h1>
     <form id="registration-form" action="#">
-      <!-- Existing form fields -->
       <div class="form-group">
-        <label for="country">Country:</label>
-        <select id="country" name="country" required>
-          <option value="">Select Country</option>
-          <option value="usa">USA</option>
-          <option value="canada">Canada</option>
-          <option value="uk">UK</option>
-          <option value="australia">Australia</option>
-        </select>
+        <label for="name">Full Name:</label>
+        <input type="text" id="name" name="name" placeholder="Enter your full name" required class="input-field">
       </div>
-      <!-- New field for phone number -->
       <div class="form-group">
-        <label for="phone">Phone Number:</label>
-        <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="123-456-7890" required>
+        <label for="email">Email Address:</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required class="input-field">
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required class="input-field">
+      </div>
+      <div class="form-group">
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" name="dob" required class="input-field">
+        <p id="dobError" class="error-message"></p>
       </div>
       <div class="form-group">
         <label for="terms" class="checkbox-label">
           <input type="checkbox" id="terms" name="terms" required>
-          <span class="checkbox-text">Accept terms and conditions</span>
+          <span class="checkbox-text">I agree to the terms and conditions</span>
         </label>
       </div>
       <div class="button-disp">
-        <button type="submit">Submit</button>                    
+        <button type="submit" class="submit-button">Submit</button>                    
       </div>       
     </form>
-    <!-- Existing entries table -->
     <div class="entries">
       <br><br>
-      <h1>Entries</h1>
+      <h1>Registered Users</h1>
       <table id="user-data">
         <thead>
           <tr>
             <th>Name</th>
             <th>Email</th>
             <th>Password</th>
-            <th>Dob</th>
-            <th>Country</th>
-            <th>Phone</th>
-            <th>Accepted terms?</th>
+            <th>Date of Birth</th>
+            <th>Accepted Terms</th>
           </tr>
         </thead>
         <tbody></tbody>
