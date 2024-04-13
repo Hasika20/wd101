@@ -1,85 +1,50 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const registrationForm = document.getElementById('registration-form');
-  const userDataTableBody = document.querySelector('#user-data tbody');
-  const dobError = document.getElementById('dobError');
+function submitForm() {
+  const nameInput = document.getElementById('name');
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const dobInput = document.getElementById('dob');
+  const termsCheckbox = document.getElementById('terms');
 
-  // Load user data on page load
-  updateUserDataTable();
-
-  registrationForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-
-    const userData = {
-      name: getValueById('name'),
-      email: getValueById('email'),
-      password: getValueById('password'),
-      dob: getValueById('dob'),
-      terms: document.getElementById('terms').checked
-    };
-
-    if (!validateUserData(userData)) {
-      showError('Value must be 09/11/1967 or later');
-    } else {
-      saveUserData(userData);
-      updateUserDataTable();
-      clearForm();
-    }
-  });
-
-  function getValueById(id) {
-    return document.getElementById(id).value;
+  if (nameInput.value.trim() === '' || emailInput.value.trim() === '' || passwordInput.value.trim() === '' || dobInput.value === '' || !termsCheckbox.checked) {
+    alert('Please fill in all fields and accept the terms.');
+    return;
   }
 
-  function validateUserData(userData) {
-    const minAge = 18;
-    const maxAge = 55;
-    const today = new Date();
-    const birthDate = new Date(userData.dob);
-    const age = today.getFullYear() - birthDate.getFullYear();
+  const tableBody = document.querySelector('#user-data tbody');
+  const newRow = tableBody.insertRow();
+  newRow.innerHTML = `
+    <td>${nameInput.value}</td>
+    <td>${emailInput.value}</td>
+    <td>${passwordInput.value}</td>
+    <td>${dobInput.value}</td>
+    <td>${termsCheckbox.checked ? 'Yes' : 'No'}</td>
+  `;
 
-    return age >= minAge && age <= maxAge;
-  }
-
-  function saveUserData(userData) {
-    const existingUserData = JSON.parse(localStorage.getItem('userList')) || [];
-    existingUserData.push(userData);
-    localStorage.setItem('userList', JSON.stringify(existingUserData));
-  }
-
-  function updateUserDataTable() {
-  userDataTableBody.innerHTML = '';
-  const userList = JSON.parse(localStorage.getItem('userList')) || [];
-
-  userList.forEach((userData) => {
-    const userDataRow = createUserDataTableRow(userData);
-    userDataTableBody.appendChild(userDataRow);
-  });
-
-  const userDataTable = document.getElementById('user-data');
-  if (userList.length > 0) {
-    userDataTable.classList.remove('hidden');
-  } else {
-    userDataTable.classList.add('hidden');
-  }
+  nameInput.value = '';
+  emailInput.value = '';
+  passwordInput.value = '';
+  dobInput.value = '';
+  termsCheckbox.checked = false;
 }
 
-  function createUserDataTableRow(userData) {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-        <td>${userData.name}</td>
-        <td>${userData.email}</td>
-        <td>${userData.password}</td>
-        <td>${userData.dob}</td>
-        <td>${userData.terms ? 'true' : 'false'}</td>
-    `;
-    return row;
-  }
+const form = document.getElementById('registration-form');
+form.addEventListener('submit', function(event) {
+  event.preventDefault();
+  submitForm();
+});
 
-  function clearForm() {
-    registrationForm.reset();
-  }
+const dobInput = document.getElementById('dob');
+const dobError = document.getElementById('dobError');
 
-  function showError(message) {
-    dobError.textContent = message;
+dobInput.addEventListener('change', function() {
+  const dobValue = new Date(dobInput.value);
+  const currentDate = new Date();
+  const minAgeDate = new Date(currentDate.getFullYear() - 55, currentDate.getMonth(), currentDate.getDate());
+  const maxAgeDate = new Date(currentDate.getFullYear() - 18, currentDate.getMonth(), currentDate.getDate());
+
+  if (dobValue < minAgeDate || dobValue > maxAgeDate) {
+    dobError.textContent = 'Date of birth must be between 18 and 55 years old.';
+  } else {
+    dobError.textContent = '';
   }
 });
