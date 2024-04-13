@@ -1,101 +1,83 @@
-function submitForm() {
-  const nameInput = document.getElementById('name');
-  const emailInput = document.getElementById('email');
-  const passwordInput = document.getElementById('password');
-  const dobInput = document.getElementById('dob');
-  const termsCheckbox = document.getElementById('terms');
-
-  if (nameInput.value.trim() === '' || emailInput.value.trim() === '' || passwordInput.value.trim() === '' || dobInput.value === '' || !termsCheckbox.checked) {
-    alert('Please fill in all fields and accept the terms.');
-    return;
-  }
-
-  const userData = {
-    name: nameInput.value,
-    email: emailInput.value,
-    password: passwordInput.value,
-    dob: dobInput.value,
-    terms: termsCheckbox.checked
-  };
-  saveUserData(userData);
-
-  const tableBody = document.querySelector('#user-data tbody');
-  const newRow = tableBody.insertRow();
-  newRow.innerHTML = `
-    <td>${userData.name}</td>
-    <td>${userData.email}</td>
-    <td>${userData.password}</td>
-    <td>${userData.dob}</td>
-    <td>${userData.terms ? 'Yes' : 'No'}</td>
-  `;
-
-  nameInput.value = '';
-  emailInput.value = '';
-  passwordInput.value = '';
-  dobInput.value = '';
-  termsCheckbox.checked = false;
-}
-
 const form = document.getElementById('registration-form');
-form.addEventListener('submit', function(event) {
-  event.preventDefault();
-
-  const dobValue = new Date(document.getElementById('dob').value);
-  const referenceYear = 1967;
-  const minDob = new Date(referenceYear + 18, dobValue.getMonth(), dobValue.getDate());
-  const maxDob = new Date(referenceYear + 55, dobValue.getMonth(), dobValue.getDate());
-
-  if (dobValue < minDob || dobValue > maxDob) {
-    alert('Date of birth must be between 18 and 55 years old with respect to the year 1967.');
-    return;
-  }
-
-  submitForm();
-});
-
+const dataTable = document.getElementById('user-data');
+const tableBody = dataTable.querySelector('tbody');
 const dobInput = document.getElementById('dob');
 const dobError = document.getElementById('dobError');
 
-dobInput.addEventListener('change', function() {
-  const dobValue = new Date(dobInput.value);
-  const referenceYear = 1967;
-  const minAgeDate = new Date(referenceYear + 18, dobValue.getMonth(), dobValue.getDate());
-  const maxAgeDate = new Date(referenceYear + 55, dobValue.getMonth(), dobValue.getDate());
-
-  if (dobValue < minAgeDate || dobValue > maxAgeDate) {
-    dobError.textContent = 'Date of birth must be between 18 and 55 years old with respect to the year 1967.';
-  } else {
-    dobError.textContent = '';
-  }
+window.addEventListener('load', () => {
+  updateTable();
 });
 
-function saveUserData(userData) {
-  const existingUserData = JSON.parse(localStorage.getItem('userList')) || [];
-  existingUserData.push(userData);
-  localStorage.setItem('userList', JSON.stringify(existingUserData));
+form.addEventListener('submit', handleSubmit);
+
+function handleSubmit(event) {
+  event.preventDefault();
+
+  const data = {
+    name: document.getElementById('name').value,
+    email: document.getElementById('email').value,
+    password: document.getElementById('password').value,
+    dob: document.getElementById('dob').value,
+    terms: document.getElementById('terms').checked
+  };
+
+  if (!validateData(data)) {
+    displayErrorMessage('Value must be 09/11/1967 or later', dobInput);
+  } else {
+    saveData(data);
+    updateTable();
+    clearForm();
+  }
 }
 
-function updateUserDataTable() {
-  const userList = JSON.parse(localStorage.getItem('userList')) || [];
-  const tableBody = document.querySelector('#user-data tbody');
+function validateData(data) {
+  const minAge = 18;
+  const maxAge = 55;
+
+  const today = new Date();
+  const birthDate = new Date(data.dob);
+  const age = today.getFullYear() - birthDate.getFullYear();
+
+  return age >= minAge && age <= maxAge;
+}
+
+function saveData(data) {
+  const existingData = JSON.parse(localStorage.getItem('userData')) || [];
+  existingData.push(data);
+  localStorage.setItem('userData', JSON.stringify(existingData));
+}
+
+function updateTable() {
   tableBody.innerHTML = '';
 
-  userList.forEach((userData) => {
-    const row = tableBody.insertRow();
-    row.innerHTML = `
-      <td>${userData.name}</td>
-      <td>${userData.email}</td>
-      <td>${userData.password}</td>
-      <td>${userData.dob}</td>
-      <td>${userData.terms ? 'Yes' : 'No'}</td>
-    `;
+  const dataList = JSON.parse(localStorage.getItem('userData')) || [];
+  dataList.forEach(data => {
+    const row = createTableRow(data);
+    tableBody.appendChild(row);
   });
+
+  dataTable.classList.toggle('hidden', dataList.length === 0);
 }
 
-window.addEventListener('load', () => {
-  updateUserDataTable();
-});
+function createTableRow(data) {
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td>${data.name}</td>
+    <td>${data.email}</td>
+    <td>${data.password}</td>
+    <td>${data.dob}</td>
+    <td>${data.terms ? 'true' : 'false'}</td>
+  `;
+  return row;
+}
 
 function clearForm() {
-  document.getElementById('registration-form').reset();
+  form.reset();
+}
+
+function displayErrorMessage(message, targetElement) {
+  const errorMessage = document.createElement('p');
+  errorMessage.textContent = message;
+  errorMessage.classList.add('error-message');
+  targetElement.parentNode.appendChild(errorMessage);
 }
