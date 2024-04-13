@@ -1,4 +1,3 @@
-// Function to handle form submission
 function submitForm() {
   const nameInput = document.getElementById('name');
   const emailInput = document.getElementById('email');
@@ -6,24 +5,30 @@ function submitForm() {
   const dobInput = document.getElementById('dob');
   const termsCheckbox = document.getElementById('terms');
 
-  // Check if all fields are filled and terms are accepted
   if (nameInput.value.trim() === '' || emailInput.value.trim() === '' || passwordInput.value.trim() === '' || dobInput.value === '' || !termsCheckbox.checked) {
     alert('Please fill in all fields and accept the terms.');
     return;
   }
 
-  // Create a new row for the table
+  const userData = {
+    name: nameInput.value,
+    email: emailInput.value,
+    password: passwordInput.value,
+    dob: dobInput.value,
+    terms: termsCheckbox.checked
+  };
+  saveUserData(userData);
+
   const tableBody = document.querySelector('#user-data tbody');
   const newRow = tableBody.insertRow();
   newRow.innerHTML = `
-    <td>${nameInput.value}</td>
-    <td>${emailInput.value}</td>
-    <td>${passwordInput.value}</td>
-    <td>${dobInput.value}</td>
-    <td>${termsCheckbox.checked ? 'Yes' : 'No'}</td>
+    <td>${userData.name}</td>
+    <td>${userData.email}</td>
+    <td>${userData.password}</td>
+    <td>${userData.dob}</td>
+    <td>${userData.terms ? 'Yes' : 'No'}</td>
   `;
 
-  // Clear the form fields after submission
   nameInput.value = '';
   emailInput.value = '';
   passwordInput.value = '';
@@ -31,13 +36,12 @@ function submitForm() {
   termsCheckbox.checked = false;
 }
 
-// Add event listener for form submission
 const form = document.getElementById('registration-form');
 form.addEventListener('submit', function(event) {
   event.preventDefault();
 
   const dobValue = new Date(document.getElementById('dob').value);
-  const referenceYear = 1967; // Change this to the desired reference year
+  const referenceYear = 1967;
   const minDob = new Date(referenceYear + 18, dobValue.getMonth(), dobValue.getDate());
   const maxDob = new Date(referenceYear + 55, dobValue.getMonth(), dobValue.getDate());
 
@@ -49,13 +53,12 @@ form.addEventListener('submit', function(event) {
   submitForm();
 });
 
-// Additional validation for date of birth input
 const dobInput = document.getElementById('dob');
 const dobError = document.getElementById('dobError');
 
 dobInput.addEventListener('change', function() {
   const dobValue = new Date(dobInput.value);
-  const referenceYear = 1967; // Change this to the desired reference year
+  const referenceYear = 1967;
   const minAgeDate = new Date(referenceYear + 18, dobValue.getMonth(), dobValue.getDate());
   const maxAgeDate = new Date(referenceYear + 55, dobValue.getMonth(), dobValue.getDate());
 
@@ -65,3 +68,34 @@ dobInput.addEventListener('change', function() {
     dobError.textContent = '';
   }
 });
+
+function saveUserData(userData) {
+  const existingUserData = JSON.parse(localStorage.getItem('userList')) || [];
+  existingUserData.push(userData);
+  localStorage.setItem('userList', JSON.stringify(existingUserData));
+}
+
+function updateUserDataTable() {
+  const userList = JSON.parse(localStorage.getItem('userList')) || [];
+  const tableBody = document.querySelector('#user-data tbody');
+  tableBody.innerHTML = '';
+
+  userList.forEach((userData) => {
+    const row = tableBody.insertRow();
+    row.innerHTML = `
+      <td>${userData.name}</td>
+      <td>${userData.email}</td>
+      <td>${userData.password}</td>
+      <td>${userData.dob}</td>
+      <td>${userData.terms ? 'Yes' : 'No'}</td>
+    `;
+  });
+}
+
+window.addEventListener('load', () => {
+  updateUserDataTable();
+});
+
+function clearForm() {
+  document.getElementById('registration-form').reset();
+}
